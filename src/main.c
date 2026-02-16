@@ -2,12 +2,14 @@
 
 int main(void)
 {
+    /* === SDL Initialization === */
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
     {
         SDL_Log("failed to initialize SDL: %s\n", SDL_GetError());
         return 1;
     }
 
+    /* === Window & Renderer === */
     SDL_Window* window;
     SDL_Renderer* renderer;
 
@@ -21,10 +23,12 @@ int main(void)
         return 1;
     }
 
+    /* === Main Loop === */
     SDL_Event event;
     bool is_running = true;
     while (is_running)
     {
+        /* === Events === */
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_EVENT_QUIT)
@@ -34,11 +38,13 @@ int main(void)
             }
         }
 
+        /* === Rendering === */
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
         SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
     }
 
+    /* === Cleaning Up === */
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
