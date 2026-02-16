@@ -49,8 +49,8 @@ int main(void)
         }
 
         uint32_t* dst = pixels;
-        const int bpp = 4; // Bytes per pixel
-        const int pixel_pitch = pitch / bpp; // Pitch in pixels
+        const int bpp = 4; /* Bytes per pixel */
+        const int pixel_pitch = pitch / bpp; /* Pitch in pixels */
         const SDL_Palette* pal = SDL_GetTexturePalette(canvtex);
 
         const SDL_PixelFormatDetails* pfd = SDL_GetPixelFormatDetails(canvtex->format);
