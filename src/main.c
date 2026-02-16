@@ -29,6 +29,49 @@ int main(void)
     const uint8_t canvpad = 4;
     SDL_FRect canvdst = {.x = (float)canvpad, .y = (float)canvpad};
 
+    SDL_Texture* canvtex = SDL_CreateTexture(renderer,
+                                             SDL_PIXELFORMAT_RGBA8888,
+                                             SDL_TEXTUREACCESS_STREAMING,
+                                             canvsiz.x,
+                                             canvsiz.y);
+    if (canvtex == NULL)
+    {
+        SDL_Log("failed to create texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    {
+        void* pixels;
+        int pitch;
+        if (!SDL_LockTexture(canvtex, NULL, &pixels, &pitch))
+        {
+            SDL_Log("failed to lock texture: %s\n", SDL_GetError());
+            return 1;
+        }
+
+        uint32_t* dst = pixels;
+        const int bpp = 4; // Bytes per pixel
+        const int pixel_pitch = pitch / bpp; // Pitch in pixels
+        const SDL_Palette* pal = SDL_GetTexturePalette(canvtex);
+
+        const SDL_PixelFormatDetails* pfd = SDL_GetPixelFormatDetails(canvtex->format);
+        if (pfd == NULL)
+        {
+            SDL_Log("failed to get pixel format details: %s\n", SDL_GetError());
+            return 1;
+        }
+
+        for (int y = 0; y < canvsiz.y; y++)
+        {
+            for (int x = 0; x < canvsiz.x; x++)
+            {
+                dst[y * pixel_pitch + x] = SDL_MapRGBA(pfd, pal, 0, 0, 0, 0xFF);;
+            }
+        }
+
+        SDL_UnlockTexture(canvtex);
+    }
+
     /* === Main Loop === */
     SDL_Event event;
     bool is_running = true;
@@ -52,16 +95,19 @@ int main(void)
         }
 
         /* === Rendering === */
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
+        SDL_SetRenderDrawColor(renderer, 0x77, 0x77, 0x77, 0xFF);
         SDL_RenderClear(renderer);
 
+        SDL_RenderTexture(renderer, canvtex, NULL, &canvdst);
         SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderFillRect(renderer, &canvdst);
+        SDL_RenderRect(renderer, &canvdst);
 
         SDL_RenderPresent(renderer);
     }
 
     /* === Cleaning Up === */
+    SDL_DestroyTexture(canvtex);
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
