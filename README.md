@@ -1,2 +1,3 @@
-# c-pixel-draw
-A simple pixel art editor written in C
+# Pixel Draw
+
+A simple pixel art editor written in C.
