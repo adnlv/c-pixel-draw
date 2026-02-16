@@ -24,7 +24,7 @@ int main(void)
     }
 
     uint8_t* canvbuf = NULL;
-    const SDL_Point canvsiz = {.x = 0xFF, .y = 0xFF};
+    const SDL_Point canvsiz = {.x = 0xFF, .y = 0xAF};
     const uint16_t canvlen = canvsiz.x * canvsiz.y;
     const uint8_t canvpad = 4;
     SDL_FRect canvdst = {.x = (float)canvpad, .y = (float)canvpad};
@@ -74,8 +74,14 @@ int main(void)
         int oh;
         SDL_GetCurrentRenderOutputSize(renderer, &ow, &oh);
 
-        canvdst.w = (float)ow - canvdst.x - (float)canvpad;
-        canvdst.h = (float)oh - canvdst.y - (float)canvpad;
+        /* available drawable area */
+        const float avail_w = (float)ow - 2.0f * (float)canvpad;
+        const float avail_h = (float)oh - 2.0f * (float)canvpad;
+        const float canvpxs = SDL_floorf(SDL_min(avail_w / (float)canvsiz.x, avail_h / (float)canvsiz.y));
+        canvdst.w = canvpxs * (float)canvsiz.x;
+        canvdst.h = canvpxs * (float)canvsiz.y;
+        canvdst.x = ((float)ow - canvdst.w) * 0.5f;
+        canvdst.y = ((float)oh - canvdst.h) * 0.5f;
 
         /* === Events === */
         while (SDL_PollEvent(&event))
@@ -83,6 +89,41 @@ int main(void)
             if (event.type == SDL_EVENT_QUIT)
             {
                 is_running = false;
+                break;
+            }
+
+            float mx;
+            float my;
+            const SDL_MouseButtonFlags mbtn = SDL_GetMouseState(&mx, &my);
+
+            if ((event.type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
+                    event.type == SDL_EVENT_MOUSE_MOTION) &&
+                event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (mx < canvdst.x || mx > canvdst.x + canvdst.w ||
+                    my < canvdst.y || my > canvdst.y + canvdst.h)
+                {
+                    break;
+                }
+
+                /* relative mouse position */
+                const float rx = mx - canvdst.x;
+                const float ry = my - canvdst.y;
+
+                /* pixel index */
+                const uint16_t ix = (int)(rx / canvpxs);
+                const uint16_t iy = (int)(ry / canvpxs);
+                const uint32_t i = ix + iy * canvsiz.x;
+
+                SDL_Log("mx = %.2f | "
+                        "my = %.2f | "
+                        "rx = %.2f | "
+                        "ry = %.2f | "
+                        "ix = %d | "
+                        "iy = %d | "
+                        "i = %d\n",
+                        mx, my, rx, ry, ix, iy, i);
+
                 break;
             }
         }
