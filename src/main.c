@@ -21,6 +21,24 @@ int main(void)
         return 1;
     }
 
+    SDL_Event event;
+    bool is_running = true;
+    while (is_running)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_EVENT_QUIT)
+            {
+                is_running = false;
+                break;
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
+    }
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
