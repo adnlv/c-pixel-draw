@@ -2,14 +2,13 @@
 
 int main(void)
 {
-    /* === SDL Initialization === */
+    /* === Initialization === */
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
     {
         SDL_Log("failed to initialize SDL: %s\n", SDL_GetError());
         return 1;
     }
 
-    /* === Window & Renderer === */
     SDL_Window* window;
     SDL_Renderer* renderer;
 
