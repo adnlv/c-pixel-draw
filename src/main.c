@@ -27,6 +27,7 @@ int main(void)
     const uint16_t canvlen = canvsiz.x * canvsiz.y;
     const uint8_t canvpad = 4;
     SDL_FRect canvdst = {.x = (float)canvpad, .y = (float)canvpad};
+    SDL_Color canvclr = {.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF};
 
     SDL_Texture* canvtex = SDL_CreateTexture(renderer,
                                              SDL_PIXELFORMAT_RGBA8888,
@@ -36,6 +37,12 @@ int main(void)
     if (canvtex == NULL)
     {
         SDL_Log("failed to create texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if (!SDL_SetTextureScaleMode(canvtex, SDL_SCALEMODE_PIXELART))
+    {
+        SDL_Log("failed to set texture scale mode: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -122,6 +129,30 @@ int main(void)
                         "iy = %d | "
                         "i = %d\n",
                         mx, my, rx, ry, ix, iy, i);
+
+                {
+                    void* pixels;
+                    int pitch;
+                    if (!SDL_LockTexture(canvtex, NULL, &pixels, &pitch))
+                    {
+                        SDL_Log("failed to lock texture: %s\n", SDL_GetError());
+                        return 1;
+                    }
+
+                    uint32_t* dst = pixels;
+                    const SDL_Palette* pal = SDL_GetTexturePalette(canvtex);
+
+                    const SDL_PixelFormatDetails* pfd = SDL_GetPixelFormatDetails(canvtex->format);
+                    if (pfd == NULL)
+                    {
+                        SDL_Log("failed to get pixel format details: %s\n", SDL_GetError());
+                        return 1;
+                    }
+
+                    dst[i] = SDL_MapRGBA(pfd, pal, canvclr.r, canvclr.g, canvclr.b, canvclr.a);
+
+                    SDL_UnlockTexture(canvtex);
+                }
 
                 break;
             }
