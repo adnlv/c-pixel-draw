@@ -2,6 +2,10 @@
 /.idea/
 /.vscode/
 
+/build/
+/build-*/
+/*-build-*/
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
