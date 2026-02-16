@@ -61,14 +61,7 @@ int main(void)
             return 1;
         }
 
-        for (int y = 0; y < canvsiz.y; y++)
-        {
-            for (int x = 0; x < canvsiz.x; x++)
-            {
-                dst[y * pixel_pitch + x] = SDL_MapRGBA(pfd, pal, 0, 0, 0, 0xFF);;
-            }
-        }
-
+        SDL_memset4(dst, SDL_MapRGBA(pfd, pal, 0, 0, 0, 0xFF), canvsiz.y * pixel_pitch);
         SDL_UnlockTexture(canvtex);
     }
 
