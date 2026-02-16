@@ -23,11 +23,24 @@ int main(void)
         return 1;
     }
 
+    uint8_t* canvbuf = NULL;
+    const SDL_Point canvsiz = {.x = 0xFF, .y = 0xFF};
+    const uint16_t canvlen = canvsiz.x * canvsiz.y;
+    const uint8_t canvpad = 4;
+    SDL_FRect canvdst = {.x = (float)canvpad, .y = (float)canvpad};
+
     /* === Main Loop === */
     SDL_Event event;
     bool is_running = true;
     while (is_running)
     {
+        int ow;
+        int oh;
+        SDL_GetCurrentRenderOutputSize(renderer, &ow, &oh);
+
+        canvdst.w = (float)ow - canvdst.x - (float)canvpad;
+        canvdst.h = (float)oh - canvdst.y - (float)canvpad;
+
         /* === Events === */
         while (SDL_PollEvent(&event))
         {
@@ -41,6 +54,10 @@ int main(void)
         /* === Rendering === */
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
         SDL_RenderClear(renderer);
+
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderFillRect(renderer, &canvdst);
+
         SDL_RenderPresent(renderer);
     }
 
