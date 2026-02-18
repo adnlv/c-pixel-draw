@@ -22,7 +22,7 @@ int main(void)
         return 1;
     }
 
-    const SDL_Point canvsiz = {.x = 0xFF, .y = 0xAF};
+    const SDL_Point canvsiz = {.x = 0x1F, .y = 0x1A};
     const uint8_t canvpad = 4;
     SDL_FRect canvdst = {.x = (float)canvpad, .y = (float)canvpad};
     SDL_Color canvclr = {.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF};
@@ -78,9 +78,10 @@ int main(void)
         int oh;
         SDL_GetCurrentRenderOutputSize(renderer, &ow, &oh);
 
-        /* available drawable area */
-        const float avail_w = (float)ow - 2.0f * (float)canvpad;
-        const float avail_h = (float)oh - 2.0f * (float)canvpad;
+        /* Available drawable area. */
+        const float jump_free_padding = 4.f;
+        const float avail_w = (float)ow - jump_free_padding * (float)canvpad;
+        const float avail_h = (float)oh - jump_free_padding * (float)canvpad;
         const float canvpxs = SDL_floorf(SDL_min(avail_w / (float)canvsiz.x, avail_h / (float)canvsiz.y));
         canvdst.w = canvpxs * (float)canvsiz.x;
         canvdst.h = canvpxs * (float)canvsiz.y;
