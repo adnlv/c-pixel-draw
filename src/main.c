@@ -22,9 +22,7 @@ int main(void)
         return 1;
     }
 
-    uint8_t* canvbuf = NULL;
     const SDL_Point canvsiz = {.x = 0xFF, .y = 0xAF};
-    const uint16_t canvlen = canvsiz.x * canvsiz.y;
     const uint8_t canvpad = 4;
     SDL_FRect canvdst = {.x = (float)canvpad, .y = (float)canvpad};
     SDL_Color canvclr = {.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF};
